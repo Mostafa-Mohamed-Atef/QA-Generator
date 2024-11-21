@@ -1,20 +1,41 @@
 import os
+import streamlit as st
 from langchain_groq import ChatGroq
 
+# Load API key from environment variables
 api_key = os.getenv("API_KEY")
 
+# Initialize the LLM model
 llm = ChatGroq(
     api_key=api_key,
     model="llama3-8b-8192"
-    )
+)
 
-context = "they are advanced types of artificial intelligence (AI) models designed to understand, generate, and manipulate human language. They are trained on massive datasets containing diverse language inputs to learn patterns, context, and nuances in language. LLMs are built using deep learning techniques, particularly neural networks."
-prompt = f"""You are a knowledgeable educator with expertise in creating effective study materials and questions tailored to various subjects and topics. Your goal is to help students enhance their understanding and retention of information by generating insightful and thought-provoking questions based on provided materials. 
+# Streamlit app
+st.title("Study Question Generator")
+st.write("Generate insightful and thought-provoking study questions from your notes.")
 
-Your task is to generate study questions from the following material: {context}.
+# Input for notes/context
+context = st.text_area("Enter your notes:", placeholder="Type or paste your study material here...")
 
-Keep in mind the key aspects of effective question formulation, such as ensuring a mix of question types (e.g., multiple-choice, short answer, essay) and aligning them with the main themes and concepts of the material. Additionally, aim to create questions that promote critical thinking and encourage deeper engagement with the content. 
+# Button to trigger the LLM
+if st.button("Generate Questions"):
+    if context.strip():  # Check if input is not empty
+        prompt = f"""You are a knowledgeable educator with expertise in creating effective study materials and questions tailored to various subjects and topics. Your goal is to help students enhance their understanding and retention of information by generating insightful and thought-provoking questions based on provided materials. 
 
-Please ensure the questions are clear, concise, and appropriate for the intended audience."""
-q = llm.invoke(prompt)
-print(q.content)
+        Your task is to generate study questions from the following material: {context}.
+
+        Keep in mind the key aspects of effective question formulation, such as ensuring a mix of question types (e.g., multiple-choice, short answer, essay) and aligning them with the main themes and concepts of the material. Additionally, aim to create questions that promote critical thinking and encourage deeper engagement with the content. 
+
+        Please ensure the questions are clear, concise, and appropriate for the intended audience."""
+        
+        try:
+            # Invoke the model
+            response = llm.invoke(prompt)
+            # Display output
+            st.subheader("Generated Study Questions")
+            st.write(response.content)
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+    else:
+        st.warning("Please enter some notes to generate questions!")

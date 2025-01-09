@@ -1,2 +1,2 @@
 langchain_groq
-os
+streamlit

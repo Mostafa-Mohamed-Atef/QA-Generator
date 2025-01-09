@@ -1,9 +1,12 @@
-import os
 import streamlit as st
 from langchain_groq import ChatGroq
 
 # Load API key from environment variables
-api_key = os.getenv("API_KEY")
+def getting_api_key():
+    with open("API_KEY.txt", 'r') as file:
+        return file.readline().strip()
+
+api_key = getting_api_key()
 
 # Initialize the LLM model
 llm = ChatGroq(
